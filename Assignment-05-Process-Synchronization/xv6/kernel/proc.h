@@ -27,7 +27,8 @@ struct cpu {
 };
 
 extern struct cpu cpus[NCPU];
-
+extern struct spinlock shm_lock;
+extern int shm_refcnt;
 // per-process data for the trap handling code in trampoline.S.
 // sits in a page by itself just under the trampoline page in the
 // user page table. not specially mapped in the kernel page table.
@@ -94,7 +95,9 @@ struct proc {
 
   // these are private to the process, so p->lock need not be held.
   uint64 kstack;               // Virtual address of kernel stack
-  uint64 sz;                   // Size of process memory (bytes)
+  uint64 sz;
+                   // Size of process memory (bytes)
+uint64 shm_pa; // Physical address of shared memory page
   pagetable_t pagetable;       // User page table
   struct trapframe *trapframe; // data page for trampoline.S
   struct context context;      // swtch() here to run process

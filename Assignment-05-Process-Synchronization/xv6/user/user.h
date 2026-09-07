@@ -25,7 +25,7 @@ char *sys_sbrk(int, int);
 int pause(int);
 int uptime(void);
 int sync(void);
-
+void *shm_get(void);
 // ulib.c
 int stat(const char *, struct stat *);
 char *strcpy(char *, const char *);

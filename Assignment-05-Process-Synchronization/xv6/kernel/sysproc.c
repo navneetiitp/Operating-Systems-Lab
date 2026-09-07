@@ -110,3 +110,32 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+uint64
+sys_shm_get(void)
+{
+  struct proc *p = myproc();
+  char *mem;
+
+  if(p->shm_pa != 0)
+    return SHM_BASE;
+
+  mem = kalloc();
+  if(mem == 0)
+    return -1;
+
+  memset(mem, 0, PGSIZE);
+
+  if(mappages(p->pagetable, SHM_BASE, PGSIZE,
+              (uint64)mem, PTE_R | PTE_W | PTE_U) != 0){
+    kfree(mem);
+    return -1;
+  }
+
+  p->shm_pa = (uint64)mem;
+
+  acquire(&shm_lock);
+  shm_refcnt = 1;
+  release(&shm_lock);
+
+  return SHM_BASE;
+}

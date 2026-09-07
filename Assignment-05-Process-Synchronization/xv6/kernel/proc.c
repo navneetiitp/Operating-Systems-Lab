@@ -25,6 +25,8 @@ extern char trampoline[]; // trampoline.S
 // memory model when using p->parent.
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
+struct spinlock shm_lock;
+int shm_refcnt;
 
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
@@ -51,6 +53,8 @@ procinit(void)
 
   initlock(&pid_lock, "nextpid");
   initlock(&wait_lock, "wait_lock");
+  initlock(&shm_lock, "shm_lock");
+  shm_refcnt = 0;
   for (p = proc; p < &proc[NPROC]; p++) {
     initlock(&p->lock, "proc");
     p->state = UNUSED;
@@ -123,6 +127,7 @@ allocproc(void)
 
 found:
   p->pid = allocpid();
+p->shm_pa = 0;
   p->state = USED;
 
   // Allocate a trapframe page.
@@ -158,8 +163,21 @@ freeproc(struct proc *p)
   if (p->trapframe)
     kfree((void *)p->trapframe);
   p->trapframe = 0;
-  if (p->pagetable)
+  
+if(p->shm_pa){
+  uvmunmap(p->pagetable, SHM_BASE, 1, 0);
+
+  acquire(&shm_lock);
+  shm_refcnt--;
+  if(shm_refcnt == 0)
+    kfree((void*)p->shm_pa);
+  release(&shm_lock);
+
+  p->shm_pa = 0;
+}
+if (p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
+
   p->pagetable = 0;
   p->sz = 0;
   p->pid = 0;
@@ -277,7 +295,21 @@ kfork(void)
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
+// Share the shared-memory page with the child.
+if(p->shm_pa){
+  if(mappages(np->pagetable, SHM_BASE, PGSIZE,
+              p->shm_pa, PTE_R | PTE_W | PTE_U) != 0){
+    freeproc(np);
+    release(&np->lock);
+    return -1;
+  }
 
+  np->shm_pa = p->shm_pa;
+
+  acquire(&shm_lock);
+  shm_refcnt++;
+  release(&shm_lock);
+}
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
 
