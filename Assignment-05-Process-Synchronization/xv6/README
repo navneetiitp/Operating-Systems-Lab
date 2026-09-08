@@ -1,48 +1,138 @@
-xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
-Version 6 (v6).  xv6 loosely follows the structure and style of v6,
-but is implemented for a modern RISC-V multiprocessor using ANSI C.
+# Operating Systems Lab - Assignment 5
+## Process Synchronization using xv6
 
-ACKNOWLEDGMENTS
+This assignment implements and demonstrates process synchronization mechanisms
+using the xv6 operating system.
 
-xv6 is inspired by John Lions's Commentary on UNIX 6th Edition (Peer
-to Peer Communications; ISBN: 1-57398-013-7; 1st edition (June 14,
-2000)).  See also https://pdos.csail.mit.edu/6.1810/, which provides
-pointers to on-line resources for v6.
+## Questions Completed
 
-The following people have made contributions: Russ Cox (context switching,
-locking), Cliff Frey (MP), Xiao Yu (MP), Nickolai Zeldovich, and Austin
-Clements.
+### Q1. Peterson's Solution
+Implemented Peterson's algorithm for synchronization between two processes.
 
-We are also grateful for the bug reports and patches contributed by
-Abhinavpatel00, Takahiro Aoyagi, Marcelo Arroyo, Hirbod Behnam, Silas
-Boyd-Wickizer, Anton Burtsev, carlclone, Ian Chen, clivezeng, Dan
-Cross, Cody Cutler, Mike CAT, Tej Chajed, Asami Doi,Wenyang Duan,
-echtwerner, eyalz800, Nelson Elhage, Saar Ettinger, Alice Ferrazzi,
-Nathaniel Filardo, flespark, Peter Froehlich, Yakir Goaron, Shivam
-Handa, Matt Harvey, Bryan Henry, jaichenhengjie, Jim Huang, Matúš
-Jókay, John Jolly, Alexander Kapshuk, Anders Kaseorg, kehao95,
-Wolfgang Keller, Jungwoo Kim, Jonathan Kimmitt, Eddie Kohler, Vadim
-Kolontsov, Austin Liew, Bruce Lowekamp, l0stman, Pavan Maddamsetti,
-Imbar Marinescu, Yandong Mao, Matan Shabtay, Hitoshi Mitake, Carmi
-Merimovich, mes900903, Mark Morrissey, mtasm, Joel Nider, Hayato Ohhashi,
-OptimisticSide, papparapa, phosphagos, Harry Porter, Greg Price, Zheng
-qhuo, Quancheng, RayAndrew, Jude Rich, segfault, Ayan Shafqat, Eldar
-Sehayek, Yongming Shen, Fumiya Shigemitsu, snoire, Taojie, Cam Tenny,
-tyfkda, Warren Toomey, Stephen Tu, Alissa Tung, Rafael Ubal, unicornx,
-Amane Uehara, Pablo Ventura, Luc Videau, Xi Wang, WaheedHafez, Keiichi
-Watanabe, Lucas Wolf, Nicolas Wolovick, wxdao, Grant Wu, x653, Andy
-Zhang, Jindong Zhang, Icenowy Zheng, ZhUyU1997, and Zou Chang Wei.
+- Two processes share a counter through a shared memory page.
+- Peterson's `flag[]` and `turn` variables provide mutual exclusion.
+- Memory fencing is used to maintain correct ordering.
+- The final counter value is verified after both processes complete.
 
-ERROR REPORTS
+Source:
+- `user/peterson.c`
 
-Please send errors and suggestions to Frans Kaashoek and Robert Morris
-(kaashoek,rtm@mit.edu).  The main purpose of xv6 is as a teaching
-operating system for MIT's 6.1810, so we are more interested in
-simplifications and clarifications than new features.
+### Q2. Producer-Consumer
+Implemented the bounded-buffer Producer-Consumer problem.
 
-BUILDING AND RUNNING XV6
+- Shared buffer is implemented using the shared memory page provided by
+  `shm_get()`.
+- Two counting semaphores are used:
+  - `empty` - number of available buffer slots
+  - `full` - number of filled buffer slots
+- A binary semaphore `mutex` protects the shared buffer.
+- Buffer capacity is configurable, with a default capacity of 5.
+- Producer generates integers from 1 to 20.
+- Consumer removes and verifies the items in order.
+- The implementation uses xv6 `sleep()`/`wakeup()` internally for
+  semaphore blocking and unblocking.
 
-You will need a RISC-V "newlib" tool chain from
-https://github.com/riscv/riscv-gnu-toolchain, and qemu compiled for
-riscv64-softmmu.  Once they are installed, and in your shell
-search path, you can run "make qemu".
+Source:
+- `user/prodcons.c`
+- `kernel/semaphore.c`
+
+### Q3. Readers-Writers
+Implemented the Readers-Writers synchronization problem.
+
+- Three reader processes and two writer processes are created.
+- Multiple readers can read the shared data concurrently.
+- Writers obtain exclusive access.
+- Reader-priority synchronization is used.
+- An output semaphore prevents concurrent processes from garbling the
+  console output.
+- Reader/writer PIDs and timestamps are printed.
+- The final value of the shared data is verified.
+
+Source:
+- `user/readwrite.c`
+
+### Q4. Dining Philosophers
+Implemented the Dining Philosophers synchronization problem.
+
+- Five philosopher processes are created using `fork()`.
+- Five binary semaphores represent the five forks.
+- Each philosopher performs 5 cycles by default.
+- Each cycle follows:
+  THINKING -> HUNGRY -> EATING -> THINKING
+- Deadlock is prevented using resource ordering: each philosopher acquires
+  the lower-numbered fork before the higher-numbered fork.
+- All philosophers successfully complete their cycles.
+
+Source:
+- `user/philosophers.c`
+
+## Synchronization Primitives
+
+A lightweight semaphore implementation was added to xv6.
+
+Semaphore system calls:
+
+- `sem_create(int initial_value)`
+- `sem_wait(int id)`
+- `sem_signal(int id)`
+- `sem_free(int id)`
+
+The semaphore implementation is backed by xv6 sleep/wakeup synchronization.
+
+## Shared Memory
+
+The synchronization programs use a shared memory page provided through:
+
+`shm_get()`
+
+This allows processes created using `fork()` to access shared synchronization
+state and data.
+
+## Build and Run
+
+From the xv6 directory:
+
+    make clean
+    make
+    make qemu
+
+Inside xv6, run:
+
+    peterson
+    prodcons
+    readwrite
+    philosophers
+
+## Output Logs
+
+Execution logs are stored in:
+
+`output_logs/`
+
+Files include:
+
+- `q2_prodcons.txt`
+- `q4_philosophers.txt`
+
+The programs were tested successfully under xv6 without synchronization
+panics or deadlocks.
+
+## Project Structure
+
+    kernel/
+        semaphore.c
+        ...
+    
+    user/
+        peterson.c
+        prodcons.c
+        readwrite.c
+        philosophers.c
+
+    output_logs/
+        q2_prodcons.txt
+        q4_philosophers.txt
+
+## Repository
+
+https://github.com/navneetiitp/Operating-Systems-Lab
