@@ -96,6 +96,7 @@ void            scheduler(void) __attribute__((noreturn));
 void            sched(void);
 void            sleep_prepare(void*);
 void            sleep(void);
+
 void            userinit(void);
 int             kwait(uint64);
 void            wakeup(void*);
@@ -184,3 +185,10 @@ void            virtio_disk_intr(void);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x) / sizeof((x)[0]))
+
+// Semaphore functions
+void seminit(void);
+int sem_create(int);
+int sem_wait(int);
+int sem_signal(int);
+int sem_free(int);

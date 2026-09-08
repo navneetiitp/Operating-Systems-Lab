@@ -7,7 +7,14 @@ int fork(void);
 int exit(int) __attribute__((noreturn));
 int wait(int *);
 int pipe(int *);
+
+
 int write(int, const void *, int);
+int sleep(int);
+int sem_create(int);
+int sem_wait(int);
+int sem_signal(int);
+int sem_free(int);
 int read(int, void *, int);
 int close(int);
 int kill(int);

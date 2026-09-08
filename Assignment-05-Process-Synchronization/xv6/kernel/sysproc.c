@@ -139,3 +139,39 @@ sys_shm_get(void)
 
   return SHM_BASE;
 }
+
+uint64
+sys_sem_create(void)
+{
+  int value;
+
+  argint(0, &value);
+  return sem_create(value);
+}
+
+uint64
+sys_sem_wait(void)
+{
+  int id;
+
+  argint(0, &id);
+  return sem_wait(id);
+}
+
+uint64
+sys_sem_signal(void)
+{
+  int id;
+
+  argint(0, &id);
+  return sem_signal(id);
+}
+
+uint64
+sys_sem_free(void)
+{
+  int id;
+
+  argint(0, &id);
+  return sem_free(id);
+}

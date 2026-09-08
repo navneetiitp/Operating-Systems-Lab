@@ -23,10 +23,17 @@ sub entry {
 	
 entry("fork");
 entry("exit");
+
 entry("wait");
+entry("sleep");
 entry("pipe");
 entry("read");
+
 entry("write");
+entry("sem_create");
+entry("sem_wait");
+entry("sem_signal");
+entry("sem_free");
 entry("close");
 entry("kill");
 entry("exec");

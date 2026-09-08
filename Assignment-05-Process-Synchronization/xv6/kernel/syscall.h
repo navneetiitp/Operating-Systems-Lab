@@ -20,5 +20,11 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+
 #define SYS_sync   22
+#define SYS_sleep    13
 #define SYS_shm_get 23
+#define SYS_sem_create 24
+#define SYS_sem_wait   25
+#define SYS_sem_signal 26
+#define SYS_sem_free   27

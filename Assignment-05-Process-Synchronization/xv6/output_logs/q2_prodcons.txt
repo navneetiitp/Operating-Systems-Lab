@@ -1,0 +1,30 @@
+Q2 Producer-Consumer Synchronization
+====================================
+
+Test 1: Default buffer
+Command: prodcons
+Buffer capacity = 5
+Producer produced items 1 through 20.
+Consumer consumed items 1 through 20 in order.
+Consumer: verification successful
+Producer-Consumer test completed successfully.
+
+Test 2: Buffer capacity 1
+Command: prodcons 1
+Buffer capacity = 1
+Producer produced items 1 through 20.
+Consumer consumed items 1 through 20 in order.
+Consumer: verification successful
+Producer-Consumer test completed successfully.
+
+Test 3: Buffer capacity 3
+Command: prodcons 3
+Buffer capacity = 3
+Producer produced items 1 through 20.
+Consumer consumed items 1 through 20 in order.
+Consumer: verification successful
+Producer-Consumer test completed successfully.
+
+Result:
+No lost, duplicate, or out-of-order items observed.
+Producer-consumer synchronization completed successfully.
