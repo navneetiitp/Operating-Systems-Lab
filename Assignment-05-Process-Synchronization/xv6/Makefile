@@ -151,7 +151,8 @@ UPROGS=\
 	$U/_dorphan\
 	$U/_sync\
         $U/_peterson\
-	$U/_prodcons
+	$U/_prodcons\
+       	$U/_readwrite
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
 
