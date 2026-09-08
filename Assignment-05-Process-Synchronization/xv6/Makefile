@@ -152,7 +152,8 @@ UPROGS=\
 	$U/_sync\
         $U/_peterson\
 	$U/_prodcons\
-       	$U/_readwrite
+       	$U/_readwrite\
+        $U/_philosophers
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
 

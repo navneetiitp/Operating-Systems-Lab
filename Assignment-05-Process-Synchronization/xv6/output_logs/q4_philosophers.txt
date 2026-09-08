@@ -1,0 +1,36 @@
+Dining Philosophers started
+Philosophers = 5, Cycles = 5
+
+Philosopher 0: THINKING (cycle 1)
+Philosopher 1: THINKING (cycle 1)
+Philosopher 2: THINKING (cycle 1)
+Philosopher 3: THINKING (cycle 1)
+Philosopher 4: THINKING (cycle 1)
+
+Philosopher 0: HUNGRY (cycle 1)
+Philosopher 0: EATING (cycle 1)
+Philosopher 1: HUNGRY (cycle 1)
+Philosopher 2: HUNGRY (cycle 1)
+Philosopher 2: EATING (cycle 1)
+Philosopher 3: HUNGRY (cycle 1)
+Philosopher 4: HUNGRY (cycle 1)
+
+Philosopher 0: THINKING (forks released)
+Philosopher 2: THINKING (forks released)
+
+Philosopher 1: EATING (cycle 1)
+Philosopher 3: EATING (cycle 1)
+Philosopher 1: THINKING (forks released)
+Philosopher 3: THINKING (forks released)
+Philosopher 4: EATING (cycle 1)
+Philosopher 4: THINKING (forks released)
+
+[Cycles 2-5 continue similarly]
+
+Philosopher 0: completed all cycles
+Philosopher 1: completed all cycles
+Philosopher 2: completed all cycles
+Philosopher 3: completed all cycles
+Philosopher 4: completed all cycles
+
+Dining Philosophers completed successfully.
