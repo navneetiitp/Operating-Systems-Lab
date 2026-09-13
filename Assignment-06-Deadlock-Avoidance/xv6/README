@@ -1,0 +1,138 @@
+# Operating Systems Lab - Assignment 5
+## Process Synchronization using xv6
+
+This assignment implements and demonstrates process synchronization mechanisms
+using the xv6 operating system.
+
+## Questions Completed
+
+### Q1. Peterson's Solution
+Implemented Peterson's algorithm for synchronization between two processes.
+
+- Two processes share a counter through a shared memory page.
+- Peterson's `flag[]` and `turn` variables provide mutual exclusion.
+- Memory fencing is used to maintain correct ordering.
+- The final counter value is verified after both processes complete.
+
+Source:
+- `user/peterson.c`
+
+### Q2. Producer-Consumer
+Implemented the bounded-buffer Producer-Consumer problem.
+
+- Shared buffer is implemented using the shared memory page provided by
+  `shm_get()`.
+- Two counting semaphores are used:
+  - `empty` - number of available buffer slots
+  - `full` - number of filled buffer slots
+- A binary semaphore `mutex` protects the shared buffer.
+- Buffer capacity is configurable, with a default capacity of 5.
+- Producer generates integers from 1 to 20.
+- Consumer removes and verifies the items in order.
+- The implementation uses xv6 `sleep()`/`wakeup()` internally for
+  semaphore blocking and unblocking.
+
+Source:
+- `user/prodcons.c`
+- `kernel/semaphore.c`
+
+### Q3. Readers-Writers
+Implemented the Readers-Writers synchronization problem.
+
+- Three reader processes and two writer processes are created.
+- Multiple readers can read the shared data concurrently.
+- Writers obtain exclusive access.
+- Reader-priority synchronization is used.
+- An output semaphore prevents concurrent processes from garbling the
+  console output.
+- Reader/writer PIDs and timestamps are printed.
+- The final value of the shared data is verified.
+
+Source:
+- `user/readwrite.c`
+
+### Q4. Dining Philosophers
+Implemented the Dining Philosophers synchronization problem.
+
+- Five philosopher processes are created using `fork()`.
+- Five binary semaphores represent the five forks.
+- Each philosopher performs 5 cycles by default.
+- Each cycle follows:
+  THINKING -> HUNGRY -> EATING -> THINKING
+- Deadlock is prevented using resource ordering: each philosopher acquires
+  the lower-numbered fork before the higher-numbered fork.
+- All philosophers successfully complete their cycles.
+
+Source:
+- `user/philosophers.c`
+
+## Synchronization Primitives
+
+A lightweight semaphore implementation was added to xv6.
+
+Semaphore system calls:
+
+- `sem_create(int initial_value)`
+- `sem_wait(int id)`
+- `sem_signal(int id)`
+- `sem_free(int id)`
+
+The semaphore implementation is backed by xv6 sleep/wakeup synchronization.
+
+## Shared Memory
+
+The synchronization programs use a shared memory page provided through:
+
+`shm_get()`
+
+This allows processes created using `fork()` to access shared synchronization
+state and data.
+
+## Build and Run
+
+From the xv6 directory:
+
+    make clean
+    make
+    make qemu
+
+Inside xv6, run:
+
+    peterson
+    prodcons
+    readwrite
+    philosophers
+
+## Output Logs
+
+Execution logs are stored in:
+
+`output_logs/`
+
+Files include:
+
+- `q2_prodcons.txt`
+- `q4_philosophers.txt`
+
+The programs were tested successfully under xv6 without synchronization
+panics or deadlocks.
+
+## Project Structure
+
+    kernel/
+        semaphore.c
+        ...
+    
+    user/
+        peterson.c
+        prodcons.c
+        readwrite.c
+        philosophers.c
+
+    output_logs/
+        q2_prodcons.txt
+        q4_philosophers.txt
+
+## Repository
+
+https://github.com/navneetiitp/Operating-Systems-Lab
