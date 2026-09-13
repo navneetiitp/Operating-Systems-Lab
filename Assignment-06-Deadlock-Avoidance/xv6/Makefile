@@ -157,7 +157,8 @@ UPROGS=\
         $U/_philosophers\
         $U/_bankers\
         $U/_deadlockdetect\
-        $U/_resourceorder
+        $U/_resourceorder\
+        $U/_syncdeadlock
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
 
