@@ -1,0 +1,24 @@
+xv6 kernel is booting
+
+hart 2 starting
+hart 1 starting
+init: starting sh
+$ resourceorder fixed
+Resource Ordering Deadlock Prevention
+=====================================
+=== FIXED ORDER: NO DEADLOCK ===
+Process 0: acquiring Lock1
+Process 0: acquired Lock1
+Process 0: acquiring Lock2
+Process 0: acquired Lock2
+Process 0: work completed
+Process 0: released Lock2 and Lock1
+Process 1: acquiring Lock1
+Process 1: acquired Lock1
+Process 1: acquiring Lock2
+Process 1: acquired Lock2
+Process 1: work completed
+Process 1: released Lock2 and Lock1
+Both processes completed without deadlock.
+Resource ordering successfully prevented deadlock.
+$

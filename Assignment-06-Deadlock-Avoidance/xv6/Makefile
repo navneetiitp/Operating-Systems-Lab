@@ -29,7 +29,8 @@ OBJS = \
   $K/kernelvec.o \
   $K/plic.o \
   $K/virtio_disk.o \
-  $K/semaphore.o 
+  $K/semaphore.o
+  
 # riscv64-unknown-elf- or riscv64-linux-gnu-
 # perhaps in /opt/riscv/bin
 #TOOLPREFIX = 
@@ -154,7 +155,9 @@ UPROGS=\
 	$U/_prodcons\
        	$U/_readwrite\
         $U/_philosophers\
-        $U/_bankers
+        $U/_bankers\
+        $U/_deadlockdetect\
+        $U/_resourceorder
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
 

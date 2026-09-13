@@ -1,0 +1,18 @@
+xv6 kernel is booting
+
+hart 2 starting
+hart 1 starting
+init: starting sh
+$ resourceorder bad
+Resource Ordering Deadlock Prevention
+=====================================
+=== BAD ORDER: DEADLOCK DEMONSTRATION ===
+Process A: acquiring Lock1
+Process A: acquired Lock1
+Process B: acquired Lock2
+Process A: waiting for Lock2
+Process B: waiting for Lock1
+Parent: timeout reached.
+Parent: bad-order configuration is DEADLOCKED.
+Parent: manual interrupt/timeout used to stop demonstration.
+$
