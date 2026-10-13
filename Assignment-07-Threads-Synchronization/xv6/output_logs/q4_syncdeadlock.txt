@@ -1,0 +1,117 @@
+xv6 kernel is booting
+
+hart 2 starting
+hart 1 starting
+init: starting sh
+$ syncdeadlock
+Combined Synchronization and Deadlock Avoidance
+================================================
+Strategy: Resource Ordering
+Global order: Printer -> Scanner -> Disk
+Resources: 2 Printers, 1 Scanner, 2 Disks
+
+Process 0: cycle 1 starting
+Process 0: requesting Printer
+Process 0: granted Printer
+Process 0: requesting Scanner
+Process 0: granted Scanner
+Process 0: starting work
+Process 0: work completed
+Process 0: released Scanner
+Process 0: released Printer
+Process 0: cycle 1 completed
+Process 0: cycle 2 starting
+Process 0: requesting Printer
+Process 0: granted Printer
+Process 0: requesting Scanner
+Process 0: granted Scanner
+Process 0: starting work
+Process 0: work completed
+Process 0: released Scanner
+Process 0: released Printer
+Process 0: cycle 2 completed
+Process 0: finished all cycles
+
+Process 2: cycle 1 starting
+Process 2: requesting Printer
+Process 2: granted Printer
+Process 2: requesting Disk
+Process 2: granted Disk
+Process 2: starting work
+Process 2: work completed
+Process 2: released Disk
+Process 2: released Printer
+Process 2: cycle 1 completed
+Process 2: cycle 2 starting
+Process 2: requesting Printer
+Process 2: granted Printer
+Process 2: requesting Disk
+Process 2: granted Disk
+Process 2: starting work
+Process 2: work completed
+Process 2: released Disk
+Process 2: released Printer
+Process 2: cycle 2 completed
+Process 2: finished all cycles
+
+Process 3: cycle 1 starting
+Process 3: requesting Printer
+Process 3: granted Printer
+Process 3: requesting Disk
+Process 3: granted Disk
+Process 3: starting work
+Process 3: work completed
+Process 3: released Disk
+Process 3: released Printer
+Process 3: cycle 2 completed
+Process 3: finished all cycles
+
+Process 1: cycle 1 starting
+Process 1: requesting Scanner
+Process 1: granted Scanner
+Process 1: requesting Disk
+Process 1: granted Disk
+Process 1: starting work
+Process 1: work completed
+Process 1: released Disk
+Process 1: released Scanner
+Process 1: cycle 1 completed
+Process 1: cycle 2 starting
+Process 1: requesting Scanner
+Process 1: granted Scanner
+Process 1: requesting Disk
+Process 1: granted Disk
+Process 1: starting work
+Process 1: work completed
+Process 1: released Disk
+Process 1: released Scanner
+Process 1: cycle 2 completed
+Process 1: finished all cycles
+
+Process 4: cycle 1 starting
+Process 4: requesting Printer
+Process 4: granted Printer
+Process 4: requesting Scanner
+Process 4: granted Scanner
+Process 4: starting work
+Process 4: work completed
+Process 4: released Scanner
+Process 4: released Printer
+Process 4: cycle 1 completed
+Process 4: cycle 2 starting
+Process 4: requesting Printer
+Process 4: granted Printer
+Process 4: requesting Scanner
+Process 4: granted Scanner
+Process 4: starting work
+Process 4: work completed
+Process 4: released Scanner
+Process 4: released Printer
+Process 4: cycle 2 completed
+Process 4: finished all cycles
+
+All 5 processes completed successfully.
+No process was permanently blocked.
+No resource was over-allocated.
+Resource ordering successfully prevented deadlock.
+$

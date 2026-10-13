@@ -1,0 +1,25 @@
+xv6 kernel is booting
+
+hart 1 starting
+hart 2 starting
+init: starting sh
+$ deadlockdetect
+Deadlock Detection using Resource Allocation Graph
+===================================================
+
+=== Scenario 1: No Deadlock ===
+Wait-for Graph:
+P0 -> P1
+P1 -> P2
+P3 -> P0
+No deadlock detected.
+
+=== Scenario 2: Deadlock ===
+Wait-for Graph:
+P0 -> P1
+P1 -> P2
+P2 -> P0
+Deadlock cycle: P0 -> P1 -> P2 -> P0
+
+Deadlock detection test completed successfully.
+
