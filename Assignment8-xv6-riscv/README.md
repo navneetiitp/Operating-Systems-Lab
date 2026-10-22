@@ -19,13 +19,4 @@ This package provides user programs and kernel implementation snippets for the f
 
 The assignment images describe xv6 **x86** APIs such as `walkpgdir()`, `PTE_P`, and `KERNBASE`. This package adapts the concepts to **xv6-riscv**, which uses Sv39 page tables, `walk()`, `PTE_V`, `PTE_U`, and high-half kernel mappings. Do not paste x86-specific code directly into xv6-riscv.
 
-## Quick start
 
-1. Extract this ZIP.
-2. Open your xv6-riscv repository in a separate directory.
-3. Follow `INTEGRATION.md` in order. The snippets are separated by destination file.
-4. Add the four programs to the `UPROGS` list in the xv6-riscv `Makefile`.
-5. Build and run using the commands in `TESTING.md`.
-6. Only commit after the kernel builds and all four programs have been tested.
-
-The source snippets are intended to be merged into the named existing files; they are not standalone replacements for those files.
