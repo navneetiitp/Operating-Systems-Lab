@@ -1,0 +1,80 @@
+/*
+ * Merge into kernel/sysproc.c. Add #include "meminfo.h" at the top.
+ */
+
+uint64
+sys_va2pa(void)
+{
+  uint64 va;
+  struct proc *p = myproc();
+  if(argaddr(0, &va) < 0)
+    return (uint64)-1;
+  if(va >= p->sz || va >= MAXVA)
+    return (uint64)-1;
+
+  pte_t *pte = walk(p->pagetable, va, 0);
+  if(pte == 0 || (*pte & PTE_V) == 0 || (*pte & PTE_U) == 0)
+    return (uint64)-1;
+
+  uint64 pa = PTE2PA(*pte) + (va & (PGSIZE - 1));
+  uint64 page_dir_index = PX(2, va);
+  uint64 page_table_index = PX(1, va);
+  uint64 offset = va & (PGSIZE - 1);
+  printf("va2pa: va=%p pa=%p vpn2=%d vpn1=%d offset=%d flags=%x\n",
+         (void*)va, (void*)pa, (int)page_dir_index, (int)page_table_index,
+         (int)offset, (uint)PTE_FLAGS(*pte));
+  return pa;
+}
+
+uint64
+sys_getmeminfo(void)
+{
+  uint64 user_addr;
+  struct proc *p = myproc();
+  struct meminfo m;
+
+  if(argaddr(0, &user_addr) < 0)
+    return -1;
+
+  m.total_pages = totalpages();
+  m.free_pages = freepages();
+  m.process_pages = p->sz / PGSIZE;
+  m.page_table_pages = vmcountpt(p->pagetable);
+
+  if(copyout(p->pagetable, user_addr, (char *)&m, sizeof(m)) < 0)
+    return -1;
+  return 0;
+}
+
+uint64
+sys_vmprint(void)
+{
+  vmprint(myproc()->pagetable);
+  return 0;
+}
+
+/*
+ * Replace the stock sys_sbrk() with this lazy-growth version.
+ * Check the exact local function signature before replacing.
+ */
+uint64
+sys_sbrk(void)
+{
+  int n;
+  uint64 addr;
+  struct proc *p = myproc();
+
+  if(argint(0, &n) < 0)
+    return -1;
+
+  addr = p->sz;
+  if(n > 0) {
+    if(p->sz + (uint64)n < p->sz || p->sz + (uint64)n >= MAXVA)
+      return -1;
+    p->sz += n;       /* reserve virtual space only */
+  } else if(n < 0) {
+    if(growproc(n) < 0)
+      return -1;      /* shrink and free allocated pages */
+  }
+  return addr;
+}

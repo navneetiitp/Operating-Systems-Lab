@@ -1,0 +1,8 @@
+/*
+ * Insert this page-fault branch into usertrap() in kernel/trap.c, before the
+ * generic unexpected-trap branch. Preserve the surrounding if/else braces.
+ */
+} else if(r_scause() == 13 || r_scause() == 15) {
+  /* Load/store page fault: allocate a lazy user page if the address is valid. */
+  if(uvmfault(p->pagetable, r_stval(), p->sz) < 0)
+    p->killed = 1;

@@ -1,0 +1,17 @@
+/* Merge these functions into kernel/kalloc.c. */
+
+uint64
+freepages(void)
+{
+  uint64 n;
+  acquire(&kmem.lock);
+  n = kmem.free_pages;
+  release(&kmem.lock);
+  return n;
+}
+
+uint64
+totalpages(void)
+{
+  return total_pages_count;
+}

@@ -1,0 +1,125 @@
+/*
+ * Merge into kernel/vm.c. Requires the standard xv6-riscv definitions:
+ * walk(), mappages(), kalloc(), kfree(), memset(), printf(), PTE_* and MAXVA.
+ */
+
+static uint64
+countpt_children(pagetable_t pagetable, int level)
+{
+  uint64 count = 0;
+  for(int i = 0; i < 512; i++) {
+    pte_t pte = pagetable[i];
+    if((pte & PTE_V) == 0)
+      continue;
+    if((pte & (PTE_R | PTE_W | PTE_X)) == 0 && level > 0) {
+      pagetable_t child = (pagetable_t)PTE2PA(pte);
+      count += 1;
+      count += countpt_children(child, level - 1);
+    }
+  }
+  return count;
+}
+
+uint64
+vmcountpt(pagetable_t pagetable)
+{
+  if(pagetable == 0)
+    return 0;
+  /* Include the root page table itself. */
+  return 1 + countpt_children(pagetable, 2);
+}
+
+static uint64
+count_kernel_root_entries(pagetable_t pagetable)
+{
+  uint64 count = 0;
+  for(int i = 256; i < 512; i++)
+    if(pagetable[i] & PTE_V)
+      count++;
+  return count;
+}
+
+static void
+vmprint_level(pagetable_t pagetable, int level, uint64 prefix, int depth)
+{
+  for(int i = 0; i < 512; i++) {
+    pte_t pte = pagetable[i];
+    if((pte & PTE_V) == 0)
+      continue;
+
+    uint64 va = prefix | ((uint64)i << (12 + 9 * level));
+    for(int j = 0; j < depth; j++)
+      printf("  ");
+    printf("L%d idx=%d va=%p pte-pa=%p flags=%x",
+           level, i, (void*)va, (void*)PTE2PA(pte), (uint)PTE_FLAGS(pte));
+
+    if((pte & (PTE_R | PTE_W | PTE_X)) == 0 && level > 0) {
+      printf(" (next-level table)\n");
+      vmprint_level((pagetable_t)PTE2PA(pte), level - 1, va, depth + 1);
+    } else {
+      printf(" frame-pa=%p\n", (void*)PTE2PA(pte));
+    }
+  }
+}
+
+void
+vmprint(pagetable_t pagetable)
+{
+  if(pagetable == 0) {
+    printf("vmprint: null page table\n");
+    return;
+  }
+  printf("page-table root PA=%p\n", (void*)((uint64)pagetable));
+  printf("kernel-half valid root entries=%d\n",
+         (int)count_kernel_root_entries(pagetable));
+
+  /*
+   * On Sv39, user addresses occupy root indices 0..255. Skip the high
+   * kernel half to keep output bounded. This still includes the user stack,
+   * trampoline and trapframe mappings at the top of the user VA range.
+   */
+  for(int i = 0; i < 256; i++) {
+    pte_t pte = pagetable[i];
+    if((pte & PTE_V) == 0)
+      continue;
+    uint64 va = (uint64)i << 30;
+    printf("L2 idx=%d va-prefix=%p pte-pa=%p flags=%x",
+           i, (void*)va, (void*)PTE2PA(pte), (uint)PTE_FLAGS(pte));
+    if((pte & (PTE_R | PTE_W | PTE_X)) == 0) {
+      printf(" (next-level table)\n");
+      vmprint_level((pagetable_t)PTE2PA(pte), 1, va, 1);
+    } else {
+      printf(" frame-pa=%p\n", (void*)PTE2PA(pte));
+    }
+  }
+}
+
+/*
+ * Return 0 on successful allocation/already-valid user mapping, -1 for an
+ * invalid address, guard-page access, or allocation/mapping failure.
+ */
+int
+uvmfault(pagetable_t pagetable, uint64 va, uint64 sz)
+{
+  if(va >= sz || va >= MAXVA)
+    return -1;
+
+  uint64 a = PGROUNDDOWN(va);
+  pte_t *pte = walk(pagetable, a, 0);
+  if(pte != 0 && (*pte & PTE_V)) {
+    /* Do not turn a present non-user mapping (e.g. the guard page) into user memory. */
+    if((*pte & PTE_U) && (*pte & (PTE_R | PTE_W | PTE_X)))
+      return 0;
+    return -1;
+  }
+
+  char *mem = kalloc();
+  if(mem == 0)
+    return -1;
+  memset(mem, 0, PGSIZE);
+  if(mappages(pagetable, a, PGSIZE, (uint64)mem, PTE_R | PTE_W | PTE_U) != 0) {
+    kfree(mem);
+    return -1;
+  }
+  return 0;
+}

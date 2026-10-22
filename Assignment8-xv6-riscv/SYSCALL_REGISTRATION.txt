@@ -1,0 +1,36 @@
+Merge these registrations into the standard xv6-riscv files.
+
+kernel/syscall.h:
+  #define SYS_va2pa      22
+  #define SYS_getmeminfo 23
+  #define SYS_vmprint    24
+Use unused numbers if your tree differs.
+
+kernel/syscall.c, alongside other externs:
+  extern uint64 sys_va2pa(void);
+  extern uint64 sys_getmeminfo(void);
+  extern uint64 sys_vmprint(void);
+
+kernel/syscall.c, inside syscalls[]:
+  [SYS_va2pa]      sys_va2pa,
+  [SYS_getmeminfo] sys_getmeminfo,
+  [SYS_vmprint]    sys_vmprint,
+
+user/user.h:
+  #include "meminfo.h"  /* or include it only in memtest/lazytest */
+  uint64 va2pa(uint64);
+  int getmeminfo(struct meminfo *);
+  int vmprint(void);
+
+user/usys.pl:
+  entry("va2pa");
+  entry("getmeminfo");
+  entry("vmprint");
+
+user/Makefile UPROGS:
+  $U/_vatest\\
+  $U/_memtest\\
+  $U/_vmprinttest\\
+  $U/_lazytest\\
+
+Ensure the backslashes match the neighboring UPROGS entries.

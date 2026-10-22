@@ -1,0 +1,23 @@
+In kernel/kalloc.c, adjust the kmem declaration:
+
+struct {
+  struct spinlock lock;
+  struct run *freelist;
+  uint64 free_pages;
+} kmem;
+
+Add at file scope:
+static uint64 total_pages_count;
+
+In kinit():
+  initlock(&kmem.lock, "kmem");
+  total_pages_count = (PHYSTOP - PGROUNDUP((uint64)end)) / PGSIZE;
+  freerange(end, (void*)PHYSTOP);
+
+In kfree(), after adding r to kmem.freelist and while kmem.lock is held:
+  kmem.free_pages++;
+
+In kalloc(), when r != 0 and while kmem.lock is held, after removing it from the freelist:
+  kmem.free_pages--;
+
+Do not change the existing page poisoning or alignment checks.

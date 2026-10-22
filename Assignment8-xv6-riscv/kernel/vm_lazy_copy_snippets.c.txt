@@ -1,0 +1,35 @@
+/*
+ * Merge the retry logic below into the stock copyin(), copyout(), and
+ * copyinstr() functions in kernel/vm.c. Keep each function's original
+ * page-boundary loop and memcpy/memmove logic.
+ *
+ * copyin(): after `pa0 = walkaddr(pagetable, va0);`, replace the immediate
+ * failure with:
+ *
+ *   if(pa0 == 0 && pagetable == myproc()->pagetable &&
+ *      uvmfault(pagetable, va0, myproc()->sz) == 0)
+ *     pa0 = walkaddr(pagetable, va0);
+ *   if(pa0 == 0)
+ *     return -1;
+ *
+ * copyout(): after `pa0 = walkaddr(pagetable, va0);`, use the same logic:
+ *
+ *   if(pa0 == 0 && pagetable == myproc()->pagetable &&
+ *      uvmfault(pagetable, va0, myproc()->sz) == 0)
+ *     pa0 = walkaddr(pagetable, va0);
+ *   if(pa0 == 0)
+ *     return -1;
+ *
+ * copyinstr(): inside its loop, after `pa0 = walkaddr(pagetable, va);`,
+ * use:
+ *
+ *   if(pa0 == 0 && pagetable == myproc()->pagetable &&
+ *      uvmfault(pagetable, va, myproc()->sz) == 0)
+ *     pa0 = walkaddr(pagetable, va);
+ *   if(pa0 == 0)
+ *     return -1;
+ *
+ * Do not call uvmfault for a page table other than the current process.
+ * The helper rejects out-of-range addresses and present non-user mappings
+ * such as the stack guard page.
+ */ 
