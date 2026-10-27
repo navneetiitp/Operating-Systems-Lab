@@ -1,0 +1,22 @@
+/* Add prototypes to kernel/defs.h, adapting placement to existing declarations. */
+void vmprint(pagetable_t);
+
+/* Add to kernel/sysproc.c. */
+uint64
+sys_vmprint(void)
+{
+  struct proc *p = myproc();
+  vmprint(p->pagetable);
+  return 0;
+}
+
+/* Q2: add a per-process counter to struct proc in kernel/proc.h: */
+/*   int page_faults; */
+/* Initialize it to 0 in allocproc() in kernel/proc.c, after p->state is set. */
+
+/* Add to kernel/sysproc.c. */
+uint64
+sys_getfaults(void)
+{
+  return myproc()->page_faults;
+}

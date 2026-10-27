@@ -1,0 +1,24 @@
+System-call registration checklist (preserve your project's existing numbers)
+============================================================================
+
+For vmprint:
+- kernel/syscall.h: #define SYS_vmprint <next unused number>
+- kernel/syscall.c: extern uint64 sys_vmprint(void);
+- kernel/syscall.c syscall table: [SYS_vmprint] = sys_vmprint,
+- kernel/defs.h: void vmprint(pagetable_t);
+- kernel/sysproc.c: implement sys_vmprint() as shown in syscall-handlers.c.txt
+- user/user.h: int vmprint(void);
+- user/usys.pl: entry("vmprint");
+
+For getfaults:
+- kernel/syscall.h: #define SYS_getfaults <another unused number>
+- kernel/syscall.c: extern uint64 sys_getfaults(void);
+- kernel/syscall.c syscall table: [SYS_getfaults] = sys_getfaults,
+- kernel/sysproc.c: implement sys_getfaults() as shown in syscall-handlers.c.txt
+- user/user.h: int getfaults(void);
+- user/usys.pl: entry("getfaults");
+
+Use two different numbers, neither already used by fork/exit/wait, clone/join,
+semaphores, shared memory, or any other local system call. Do not copy example
+numbers from a different xv6 fork. In this repository, Makefile's user programs
+are registered by adding $U/_pttest, $U/_faulttest, and $U/_pagerepl to UPROGS.

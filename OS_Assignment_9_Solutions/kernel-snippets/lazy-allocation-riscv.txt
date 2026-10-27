@@ -1,0 +1,56 @@
+Q2 kernel changes — xv6-RISC-V adaptation
+========================================
+
+1) kernel/sysproc.c — change sys_sbrk() to defer positive allocation. Preserve
+   your repository's existing return/error conventions. The usual xv6-riscv
+   form is:
+
+uint64
+sys_sbrk(void)
+{
+  int n;
+  uint64 addr;
+  struct proc *p = myproc();
+  if (argint(0, &n) < 0)
+    return -1;
+  addr = p->sz;
+  if (n > 0) {
+    if (addr + n < addr || addr + n >= MAXVA)
+      return -1;
+    p->sz += n;                 // reserve virtual range only
+  } else if (n < 0) {
+    if (growproc(n) < 0)
+      return -1;                 // retain normal shrink/free behavior
+  }
+  return addr;
+}
+
+2) kernel/proc.h — add `int page_faults;` to struct proc. In allocproc() in
+   kernel/proc.c initialize `p->page_faults = 0;` for each new process.
+
+3) kernel/trap.c — in usertrap(), handle load/store page faults (scause 13/15)
+   before the generic unexpected-trap branch. Use the vmfault() already present
+   in this project's kernel/vm.c:
+
+  } else if (r_scause() == 13 || r_scause() == 15) {
+    uint64 va = r_stval();
+    if (va < p->sz && vmfault(p->pagetable, p->sz, va, 1) != 0) {
+      p->page_faults++;
+    } else {
+      printf("pid %d: invalid page fault at %p\n", p->pid, va);
+      p->killed = 1;
+    }
+  } else if ((which_dev = devintr()) != 0) {
+
+   Keep the rest of your existing usertrap() logic. Some xv6 revisions use
+   different branch ordering; insert this into the existing if/else chain.
+
+4) Ensure uvmunmap() skips absent PTEs and uvmcopy() skips missing/unmapped
+   pages. The vm.c uploaded by the user already does this in these functions.
+   Its vmfault() already allocates a zero-filled page and maps PTE_R|PTE_W|PTE_U.
+
+5) Register getfaults and vmprint as system calls using unused, unique numbers
+   in kernel/syscall.h; dispatch them in kernel/syscall.c; add declarations to
+   user/user.h; and add entries to user/usys.pl (or the syscall stub generator
+   used by your exact xv6 revision). Keep all pre-existing custom syscall
+   numbers and entries unchanged.

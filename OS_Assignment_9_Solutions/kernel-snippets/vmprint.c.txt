@@ -1,0 +1,34 @@
+/* Add to kernel/vm.c. This is for xv6-RISC-V Sv39, not xv6 x86. */
+void
+vmprint_recursive(pagetable_t pagetable, int level, uint64 prefix,
+                  int *user_pages, int *table_pages)
+{
+  (*table_pages)++; /* Includes the root page-table page. */
+  for (int i = 0; i < 512; i++) {
+    pte_t pte = pagetable[i];
+    if ((pte & PTE_V) == 0)
+      continue;
+
+    uint64 va = prefix | ((uint64)i << (12 + 9 * level));
+    uint64 pa = PTE2PA(pte);
+    if ((pte & (PTE_R | PTE_W | PTE_X)) == 0) {
+      if (level > 0)
+        vmprint_recursive((pagetable_t)pa, level - 1, va,
+                          user_pages, table_pages);
+    } else if (pte & PTE_U) {
+      printf("VA: %p PA: %p P:%d W:%d U:%d\n", va, pa,
+             !!(pte & PTE_V), !!(pte & PTE_W), !!(pte & PTE_U));
+      (*user_pages)++;
+    }
+  }
+}
+
+void
+vmprint(pagetable_t pagetable)
+{
+  int user_pages = 0;
+  int table_pages = 0;
+  vmprint_recursive(pagetable, 2, 0, &user_pages, &table_pages);
+  printf("Total valid user pages: %d\n", user_pages);
+  printf("Page-table pages used (including root): %d\n", table_pages);
+}
