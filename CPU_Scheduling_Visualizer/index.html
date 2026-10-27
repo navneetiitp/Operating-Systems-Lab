@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPU Scheduling Algorithm Visualizer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="eyebrow">OPERATING SYSTEMS · PROJECT</div>
+    <h1>CPU Scheduling <span>Visualizer</span></h1>
+    <p>Implement and compare scheduling algorithms with an interactive Gantt chart and process metrics.</p>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <div class="section-heading">
+        <div><span class="step">01</span><h2>Choose algorithm</h2></div>
+        <span class="muted">Run one algorithm at a time</span>
+      </div>
+      <div class="algorithm-grid" id="algorithmGrid">
+        <button class="algorithm active" data-algo="fcfs"><b>FCFS</b><small>First Come, First Served</small></button>
+        <button class="algorithm" data-algo="sjf"><b>SJF</b><small>Shortest Job First · Non-preemptive</small></button>
+        <button class="algorithm" data-algo="srtf"><b>SRTF</b><small>Shortest Remaining Time · Preemptive</small></button>
+        <button class="algorithm" data-algo="priority"><b>Priority</b><small>Priority · Non-preemptive</small></button>
+        <button class="algorithm" data-algo="priorityp"><b>Priority P</b><small>Priority · Preemptive</small></button>
+        <button class="algorithm" data-algo="rr"><b>Round Robin</b><small>Time-sliced · Preemptive</small></button>
+        <button class="algorithm" data-algo="hrrn"><b>HRRN</b><small>Highest Response Ratio Next</small></button>
+        <button class="algorithm" data-algo="ljf"><b>LJF</b><small>Longest Job First · Non-preemptive</small></button>
+        <button class="algorithm" data-algo="lrtf"><b>LRTF</b><small>Longest Remaining Time · Preemptive</small></button>
+        <button class="algorithm" data-algo="mlq"><b>MLQ</b><small>Multilevel Queue · Priority queues</small></button>
+        <button class="algorithm" data-algo="mlfq"><b>MLFQ</b><small>Multilevel Feedback Queue</small></button>
+      </div>
+      <div class="algorithm-note" id="algorithmNote">Processes run in arrival order. Once a process starts, it runs until completion.</div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div><span class="step">02</span><h2>Process input</h2></div>
+        <div class="actions"><button class="btn secondary" id="sampleBtn">Load sample</button><button class="btn secondary" id="clearBtn">Clear all</button></div>
+      </div>
+      <div class="controls">
+        <label>Process ID <input id="pid" value="P1" maxlength="8" /></label>
+        <label>Arrival time <input id="arrival" type="number" min="0" value="0" /></label>
+        <label>Burst time <input id="burst" type="number" min="1" value="5" /></label>
+        <label class="priority-field">Priority <input id="priority" type="number" min="1" value="2" /></label>
+        <label class="quantum-field">Time quantum <input id="quantum" type="number" min="1" value="2" /></label>
+        <button class="btn primary add-btn" id="addBtn">+ Add process</button>
+      </div>
+      <p class="hint">Lower priority number means higher priority / higher queue. Arrival and burst times must be non-negative, and burst time must be at least 1. MLQ uses Round Robin within each fixed-priority queue; MLFQ uses 3 queues with quanta 2 and 4, then FCFS.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Process</th><th>Arrival</th><th>Burst</th><th>Priority</th><th></th></tr></thead>
+          <tbody id="processRows"></tbody>
+        </table>
+      </div>
+      <div class="run-row"><span id="processCount">0 processes</span><button class="btn primary" id="runBtn">Run scheduling →</button></div>
+      <div class="error" id="error" role="alert"></div>
+    </section>
+
+    <section class="panel results" id="results">
+      <div class="section-heading">
+        <div><span class="step">03</span><h2>Simulation results</h2></div>
+        <span class="muted" id="resultAlgorithm">FCFS</span>
+      </div>
+      <div class="empty-state" id="emptyState"><div class="empty-icon">▥</div><b>Your Gantt chart will appear here</b><p>Add processes, then run the selected algorithm.</p></div>
+      <div id="resultContent" hidden>
+        <h3>Gantt chart</h3>
+        <div id="gantt" class="gantt"></div>
+        <div id="timeline" class="timeline"></div>
+        <div class="stats" id="stats"></div>
+        <h3>Process-wise calculations</h3>
+        <div class="table-wrap">
+          <table class="result-table">
+            <thead><tr><th>Process</th><th>AT</th><th>BT</th><th>Priority</th><th>CT</th><th>TAT</th><th>WT</th><th>RT</th></tr></thead>
+            <tbody id="resultRows"></tbody>
+          </table>
+        </div>
+        <p class="formula">TAT = CT − AT &nbsp; · &nbsp; WT = TAT − BT &nbsp; · &nbsp; RT = First start time − AT</p>
+        <button class="btn secondary" id="exportBtn">Export results as CSV</button>
+      </div>
+    </section>
+    <footer>Built for learning Operating Systems · CPU Scheduling</footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
