@@ -1,0 +1,12 @@
+SIMULATED TERMINAL OUTPUT — NOT ACTUAL xv6 EXECUTION
+Question 2: Virtual-to-Physical Translation / vttest
+
+$ vttest
+Allocated virtual range: 0x0000000000004000 - 0x0000000000006000
+VA 0x0000000000004000 -> PA 0x0000000087f12000
+VA 0x0000000000005011 -> PA 0x0000000087f13011
+Expected result: 0x0000000030000000 is unmapped
+
+$
+NOTE: Virtual and physical addresses above are illustrative examples. Actual addresses depend
+on the QEMU run, physical allocator state, and process layout.

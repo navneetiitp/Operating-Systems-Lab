@@ -1,0 +1,4 @@
+Independent algorithm check for reference string (faults, hits):
+3 frames: FIFO=(15, 5), LRU=(12, 8), Optimal=(9, 11)
+4 frames: FIFO=(10, 10), LRU=(8, 12), Optimal=(8, 12)
+5 frames: FIFO=(9, 11), LRU=(7, 13), Optimal=(7, 13)

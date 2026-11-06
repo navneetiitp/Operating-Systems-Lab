@@ -1,0 +1,37 @@
+SIMULATED TERMINAL OUTPUT — NOT ACTUAL xv6 EXECUTION
+Question 1: Memory Management / memstats
+
+$ memtest
+
+--- Initial memory statistics ---
+
+===== MEMORY STATISTICS =====
+Total allocated pages : 0
+Total freed pages     : 0
+Currently allocated   : 0
+Available pages       : 32000
+=============================
+
+Allocated and touched 3 pages.
+--- After allocation ---
+
+===== MEMORY STATISTICS =====
+Total allocated pages : 3
+Total freed pages     : 0
+Currently allocated   : 3
+Available pages       : 31997
+=============================
+
+Released 3 pages.
+--- After deallocation ---
+
+===== MEMORY STATISTICS =====
+Total allocated pages : 3
+Total freed pages     : 3
+Currently allocated   : 0
+Available pages       : 32000
+=============================
+
+$ 
+NOTE: These numbers are illustrative placeholders. Real xv6 kernel activity, page-table
+allocations, and other processes can change the observed counters.

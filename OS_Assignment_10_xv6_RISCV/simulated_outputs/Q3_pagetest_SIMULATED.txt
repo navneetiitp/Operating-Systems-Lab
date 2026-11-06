@@ -1,0 +1,17 @@
+SIMULATED TERMINAL OUTPUT — NOT ACTUAL xv6 EXECUTION
+Question 3: Page Table Information and Read-only Protection / pagetest
+
+$ pagetest
+Before changing permissions:
+pageinfo: VA=0x0000000000004000 PPN=557840 P=1 W=1 U=1
+After removing write permission:
+pageinfo: VA=0x0000000000004000 PPN=557840 P=1 W=0 U=1
+Attempting a write to the read-only page; a store page fault is expected.
+usertrap(): unexpected scause 0x000000000000000f pid=4
+         sepc=0x00000000000000f4 stval=0x0000000000004000
+pid 4 pagetest: killed
+
+$
+
+EXPECTED: The process is terminated by the deliberate write to a page without PTE_W.
+The shell should remain available. Trap details and addresses vary by xv6 revision/run.
